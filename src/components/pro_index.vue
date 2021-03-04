@@ -24,8 +24,8 @@
                             </div>
                         </el-col>
                         <el-col :span="3">
-                            <a href="http://localhost:8080/#/intro">
-                                <div class="h1">关于</div>
+                            <a href="http://localhost:8080/#/all_pro">
+                                <div class="h1">所有产品</div>
                             </a>
                         </el-col>
                         <el-col :span="12">
@@ -149,7 +149,16 @@
                 </el-main>
             </div>
             <el-footer>
-                <span @click="djtest()"><h2>开始时间-2020/12/3</h2></span>
+              <el-row>
+                <el-col :span="4">
+                  <a href="http://localhost:8080/#/admin_index">
+                    <el-button icon="el-icon-user" circle>进入后台</el-button>
+                  </a>
+                </el-col>
+                <el-col :span="20">
+                  <span @click="djtest()"><h2>开始时间-2020/12/3</h2></span>
+                </el-col>
+              </el-row>
             </el-footer>
         </el-container>
     </div>

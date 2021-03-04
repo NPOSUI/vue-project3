@@ -62,7 +62,7 @@
           <el-main>
             <el-row :gutter="40">
               <el-col :span="6" v-for="list in update_new_data" class="col_buttom">
-                <el-card :body-style="{ padding: '0px' }" class="product_card">
+                <el-card :body-style="{ padding: '0px' }" class="product_card" shadow="hover">
                   <div @click="inProduct(list.id)">
 <!--                    <el-img-->
 <!--                      :v-if="list.photo === ''"-->
@@ -186,9 +186,13 @@
         }
       },
       inProduct(pro_id){
-        this.$router.push("/pro_info/" + pro_id);
+        this.$router.push(`/pro_info/${pro_id}`);
       },
       addshopcar(pro_id) {
+        if (localStorage.getItem('token') === ''){
+          this.$message('请先登陆');
+          return ;
+        }
         let url = this.baseUrl + "/shopcar/";
         let userid = JSON.parse(localStorage.getItem('user')).id;
         this.$http.post(url,{'user': userid, 'product': pro_id},this.headers).then((res) => {

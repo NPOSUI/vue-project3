@@ -1,7 +1,7 @@
 .el-header, .el-footer {
-    height: 30px;
+
     background-color: lightskyblue;
-    color: #333;
+    color: whitesmoke;
     text-align: center;
     line-height: 20px;
 }
