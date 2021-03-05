@@ -2,21 +2,21 @@
   <div id="big">
     <el-container>
       <el-header>
-        <el-row :gutter="20">
+        <el-row>
           <el-col :span="3">
-            <a href="http://localhost:8080">
-              <div class="h1">
-                <el-avatar class="avatar">
-                  <img class="auto-img ab" :src="img_logo"/>
+            <div class="logo">
+              <a href="http://localhost:8080">
+                <el-avatar class="avatar_logo">
+                  <img :src="img_logo"/>
                 </el-avatar>
-              </div>
-            </a>
+              </a>
+            </div>
           </el-col>
           <el-col :span="6" :offset="6">
             <h3>后台管理</h3>
           </el-col>
           <el-col :span="3" :offset="6">
-            <div class="h1">
+            <div class="h2">
               <el-button icon="el-icon-user">admin:{{name}}</el-button>
             </div>
           </el-col>
@@ -85,17 +85,26 @@
   @import "../../assets/css/H_M_F.css";
 
   #header_menu {
-    width: 80%;
+    width: 90%;
     border: 1px solid royalblue;
-    margin-left: 10%;
+    margin-left: 5%;
   }
 
-  .avatar {
+  .logo {
+    height: 30px;
+    margin-top: -7px;
+  }
+
+  .avatar_logo {
     width: 70px;
     height: 50px;
-    display: block;
     border-radius: 5px;
     margin-left: 1px;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
   }
 
 </style>

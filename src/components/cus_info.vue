@@ -1,10 +1,5 @@
 <template>
   <el-container>
-    <el-header>
-      <h4>
-        个人信息
-      </h4>
-    </el-header>
     <el-main>
         <el-form label-width="80px" :model="updateUser" ref="updateUser" :rules="userRules">
           <el-form-item label="用户名" prop="name">
@@ -129,8 +124,10 @@
         imagesrc: this.baseUrl + "/upload/",
       }
     },
-    mounted() {
+    created() {
       this.getdata()
+    },
+    mounted() {
     },
     methods: {
       getdata() {

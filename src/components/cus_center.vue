@@ -2,56 +2,49 @@
   <div id="big">
     <el-container>
       <el-header>
-        <el-row :gutter="20">
-          <el-col :span="3">
-            <a href="http://localhost:8080">
-              <div class="h1">
-                <img class="auto-img ab" :src="img_logo"/>
-              </div>
-            </a>
-          </el-col>
-          <el-col :span="3">
-            <div class="h1">
-              <el-select v-model="type_value" placeholder="产品类型">
-                <el-option
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
-                </el-option>
-              </el-select>
+        <el-row>
+          <el-col :span="2">
+            <div class="logo">
+              <a href="http://localhost:8080">
+                <el-avatar class="avatar_logo">
+                  <img :src="img_logo"/>
+                </el-avatar>
+              </a>
             </div>
           </el-col>
-          <el-col :span="3">
+          <el-col :span="2" :offset="3">
             <a href="http://localhost:8080/#/all_pro">
               <div class="h1">所有产品</div>
             </a>
           </el-col>
           <el-col :span="12">
-            <div class="h2">
-              <el-row :gutter="0">
-                <el-col :span="20">
-                  <el-input v-model="input" placeholder="请输入搜索内容">
-                  </el-input>
-                </el-col>
-                <el-col :span="4">
-                  <a href="http://localhost:8080/#/search">
-                    <el-button icon="el-icon-search" circle></el-button>
-                  </a>
-                </el-col>
-              </el-row>
+            <div class="input_div">
+              <el-input placeholder="请输入内容" v-model="keyword" class="input-with-select">
+                <el-select v-model="pro_type" slot="prepend" placeholder="请选择" class="elselect">
+                  <el-option
+                    v-for="item in pro_type_options"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option>
+                </el-select>
+                <el-button slot="append" icon="el-icon-search" @click="searchProduct"></el-button>
+              </el-input>
             </div>
           </el-col>
-          <el-col :span="3">
-            <a href="">
-              <div class="h1">
-                <div>
-                  <el-avatar v-if="userlogo" :src="'http://localhost:8800/'+userlogo"
-                             class="avatar"></el-avatar>
-                </div>
-                <div>
-                  {{name}}
-                </div>
+          <el-col :span="1" :offset="2">
+            <a v-if="token!==''">
+              <el-avatar v-if="userlogo" :src="'http://localhost:8800/'+userlogo"
+                         class="avatar">
+              </el-avatar>
+            </a>
+          </el-col>
+          <el-col :span="2">
+            <a v-if="token!==''">
+              <div class="user_logo">
+                <el-button type="danger" @click="logout">
+                  退出登陆
+                </el-button>
               </div>
             </a>
           </el-col>
@@ -60,17 +53,19 @@
       <el-main>
         <el-container>
           <el-aside style="width: 200px;background-color: #f5f5f5;height: 1000px">
-            <el-menu :default-active="defIndex" router>
-              <el-menu-item index="cus_info">
-                <h3>个人信息</h3>
-              </el-menu-item>
-              <el-menu-item index="cus_shopcar">
-                <h3>购物车</h3>
-              </el-menu-item>
-              <el-menu-item index="cus_order">
-                <h3>订单</h3>
-              </el-menu-item>
-            </el-menu>
+            <div class="aside_menu">
+              <el-menu :default-active="defIndex" router>
+                <el-menu-item index="cus_info">
+                  <h3>个人信息</h3>
+                </el-menu-item>
+                <el-menu-item index="cus_shopcar">
+                  <h3>购物车</h3>
+                </el-menu-item>
+                <el-menu-item index="cus_order">
+                  <h3>订单</h3>
+                </el-menu-item>
+              </el-menu>
+            </div>
           </el-aside>
           <el-main>
             <router-view></router-view>
@@ -78,7 +73,7 @@
         </el-container>
       </el-main>
       <el-footer>
-        <span @click="djtest()"><h2>开始时间-2020/12/3</h2></span>
+        <span><h2>2020/12/3</h2></span>
       </el-footer>
     </el-container>
   </div>
@@ -93,38 +88,40 @@
       return {
         img_logo: pro_logo,
         defIndex: 'cus_info',
+        token: localStorage.getItem('token'),
         name: JSON.parse(localStorage.getItem('user')).username,
         userlogo: localStorage.getItem('userlogo'),
-        input: '',
-        options: [{
-          value: 'pro_fruits', label: '水果'
+        pro_type_options: [{
+          value: '肉类', label: '肉类'
         }, {
-          value: 'pro_cereal', label: '粮食'
+          value: '谷类', label: '谷类'
         }, {
-          value: 'pro_sea', label: '海鲜'
+          value: '水果', label: '水果'
         }, {
-          value: 'pro_meat', label: '生肉'
+          value: '水产', label: '水产'
         }, {
-          value: 'pro_other', label: '其他'
-        }], type_value: '',
+          value: '蔬菜', label: '蔬菜'
+        }, {
+          value: '粮油', label: '粮油'
+        }, {
+          value: '其他', label: '其他'
+        }, {
+          value: undefined, label: '无'
+        }], pro_type: '',
+        keyword: '',
       }
     },
     mounted() {
-      this.getdata()
     },
     methods: {
-      getAllOrder() {
-        let url = this.baseUrl + '/orders/' + JSON.parse(localStorage.getItem('user')).id + '/';
-        this.$http.get(url, this.headers).then((res) => {
-          localStorage.setItem('orders', JSON.stringify(res.data.data))
-        });
-        this.orderlist = JSON.parse(localStorage.getItem('orders'))
+      searchProduct() {
+        this.$router.push({name: 'all_pro', params: {type1: this.pro_type, keyword1: this.keyword}})
       },
-      djtest() {
-        let url = "http://localhost:8000/";
-        this.$http.get(url).then((res) => {
-          console.log(res.data);
-        })
+      logout() {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        localStorage.removeItem("userlogo");
+        this.$router.push("RL");
       }
     }
   }
@@ -135,9 +132,33 @@
   @import "../assets/css/H_M_F.css";
 
   .avatar {
-    margin-top: 12px;
+    margin-top: 5px;
     margin-left: 10px;
     float: left;
+  }
+
+  .avatar_logo {
+    width: 70px;
+    height: 50px;
+    border-radius: 5px;
+    margin-left: 1px;
+  }
+
+  .user_logo {
+    line-height: 50px;
+  }
+
+  .logo {
+    height: 30px;
+    margin-top: -1px;
+  }
+
+  .input_div {
+    margin-top: 5px;
+  }
+
+  .aside_menu {
+    margin-top: 40px;
   }
 
   .el-row {
@@ -182,6 +203,10 @@
   img {
     width: 100%;
     height: 100%;
+  }
+
+  .elselect {
+    width: 100px;
   }
 
 </style>

@@ -2,59 +2,57 @@
   <div id="big">
     <el-container>
       <el-header>
-        <el-row :gutter="20">
-          <el-col :span="3">
-            <a href="http://localhost:8080">
-              <div class="h1">
-                <img class="auto-img ab" :src="img_logo"/>
-              </div>
-            </a>
-          </el-col>
-          <el-col :span="3">
-            <div class="h1">
-              <el-select v-model="type_value" placeholder="产品类型">
-                <el-option
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
-                </el-option>
-              </el-select>
+        <el-row>
+          <el-col :span="2">
+            <div class="logo">
+              <a href="http://localhost:8080">
+                <el-avatar class="avatar_logo">
+                  <img :src="img_logo"/>
+                </el-avatar>
+              </a>
             </div>
           </el-col>
-          <el-col :span="3">
+          <el-col :span="2" :offset="3">
             <a href="http://localhost:8080/#/all_pro">
               <div class="h1">所有产品</div>
             </a>
           </el-col>
           <el-col :span="12">
-            <div class="h2">
-              <el-row :gutter="0">
-                <el-col :span="20">
-                  <el-input v-model="input" placeholder="请输入搜索内容">
-                  </el-input>
-                </el-col>
-                <el-col :span="4">
-                  <a href="http://localhost:8080/#/search">
-                    <el-button icon="el-icon-search" circle></el-button>
-                  </a>
-                </el-col>
-              </el-row>
+            <div class="input_div">
+              <el-input placeholder="请输入内容" v-model="keyword" class="input-with-select">
+                <el-select v-model="pro_type" slot="prepend" placeholder="请选择" class="elselect">
+                  <el-option
+                    v-for="item in pro_type_options"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option>
+                </el-select>
+                <el-button slot="append" icon="el-icon-search" @click="searchProduct"></el-button>
+              </el-input>
             </div>
           </el-col>
-          <el-col :span="3">
-            <a href="http://localhost:8080/#/cus_center" v-if="token !=='' ">
-              <div class="h1">
-                <div>
-                  <el-avatar v-if="userlogo" :src="'http://localhost:8800/'+userlogo" class="avatar">
-                  </el-avatar>
-                </div>
-                <div>
+          <el-col :span="1" :offset="2">
+              <a href="http://localhost:8080/#/cus_center" v-if="token!==undefined">
+                <el-avatar v-if="userlogo" :src="'http://localhost:8800/'+userlogo"
+                           class="avatar">
+                </el-avatar>
+              </a>
+            </el-col>
+            <el-col :span="2">
+              <a href="http://localhost:8080/#/cus_center" v-if="token!==undefined">
+                <div class="user_logo">
                   {{name}}
                 </div>
-              </div>
-            </a>
-          </el-col>
+              </a>
+            </el-col>
+            <el-col :span="2" :offset="2">
+              <a href="http://localhost:8080/#/RL" v-if="token===undefined">
+                <div class="user_logo">
+                  <el-button icon="el-icon-user">登陆或注册</el-button>
+                </div>
+              </a>
+            </el-col>
         </el-row>
       </el-header>
       <el-main>
@@ -233,20 +231,27 @@
         pro_id: 0,
         img_logo: pro_logo,
         name: JSON.parse(localStorage.getItem('user')).username,
+        token: localStorage.getItem('token'),
         userlogo: localStorage.getItem('userlogo'),
         headers: {"Authorization": "JWT " + localStorage.getItem('token')},
-        input: '',
-        options: [{
-          value: 'pro_fruits', label: '水果'
+        pro_type_options: [{
+          value: '肉类', label: '肉类'
         }, {
-          value: 'pro_cereal', label: '粮食'
+          value: '谷类', label: '谷类'
         }, {
-          value: 'pro_sea', label: '海鲜'
+          value: '水果', label: '水果'
         }, {
-          value: 'pro_meat', label: '肉类'
+          value: '水产', label: '水产'
         }, {
-          value: 'pro_other', label: '其他'
-        }], type_value: '',
+          value: '蔬菜', label: '蔬菜'
+        }, {
+          value: '粮油', label: '粮油'
+        }, {
+          value: '其他', label: '其他'
+        },{
+          value: undefined, label: '无'
+        }], pro_type: '',
+        keyword: '',
         productinfo: '',
         num: 0,
         total: 0,
@@ -259,10 +264,12 @@
         comment_type: '',
       }
     },
-    mounted() {
+    created() {
       this.pro_id = this.$route.params.id;
       this.getdata();
       this.getProComments();
+    },
+    mounted() {
     },
     methods: {
       getdata() {
@@ -362,6 +369,9 @@
         }, this.headers).then((res) => {
           this.$message(res.data.msg);
         })
+      },
+      searchProduct() {
+        this.$router.push({name:'all_pro',params:{type1:this.pro_type,keyword1:this.keyword}})
       }
     }
   }
@@ -371,6 +381,42 @@
 <style scoped>
   @import "../assets/css/common.css";
   @import "../assets/css/H_M_F.css";
+
+  .avatar {
+    margin-top: 5px;
+    margin-left: 10px;
+    float: left;
+  }
+
+  .avatar_logo {
+    width: 70px;
+    height: 50px;
+    border-radius: 5px;
+    margin-left: 1px;
+    margin-right: 5px;
+  }
+
+  .user_logo {
+    line-height: 50px;
+    color: whitesmoke;
+    font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+    margin-top: 5px;
+  }
+
+  .logo {
+    height: 30px;
+    margin-top: 5px;
+  }
+
+  .input_div {
+    margin-top: 8px;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+  }
+
 
   #pro_info {
     width: 70%;

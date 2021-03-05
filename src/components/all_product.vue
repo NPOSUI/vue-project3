@@ -2,56 +2,54 @@
   <div id="big">
     <el-container>
       <el-header>
-        <el-row :gutter="20">
-          <el-col :span="3">
-            <a href="http://localhost:8080">
-              <div class="h1">
-                <img class="auto-img ab" :src="img_logo"/>
-              </div>
-            </a>
-          </el-col>
-          <el-col :span="3">
-            <div class="h1">
-              <el-select v-model="type_value" placeholder="产品类型">
-                <el-option
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
-                </el-option>
-              </el-select>
+        <el-row>
+          <el-col :span="2">
+            <div class="logo">
+              <a href="http://localhost:8080">
+                <el-avatar class="avatar_logo">
+                  <img :src="img_logo"/>
+                </el-avatar>
+              </a>
             </div>
           </el-col>
-          <el-col :span="3">
-            <a href="http://localhost:8080/#/intro">
-              <div class="h1">关于</div>
+          <el-col :span="2" :offset="3">
+            <a href="http://localhost:8080/#/all_pro">
+              <div class="h1">所有产品</div>
             </a>
           </el-col>
           <el-col :span="12">
-            <div class="h2">
-              <el-row :gutter="0">
-                <el-col :span="20">
-                  <el-input v-model="input" placeholder="请输入搜索内容">
-                  </el-input>
-                </el-col>
-                <el-col :span="4">
-                  <a href="http://localhost:8080/#/search">
-                    <el-button icon="el-icon-search" circle></el-button>
-                  </a>
-                </el-col>
-              </el-row>
+            <div class="input_div">
+              <el-input placeholder="请输入内容" v-model="keyword" class="input-with-select">
+                <el-select v-model="pro_type" slot="prepend" placeholder="请选择" class="elselect">
+                  <el-option
+                    v-for="item in pro_type_options"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option>
+                </el-select>
+                <el-button slot="append" icon="el-icon-search" @click="searchProduct"></el-button>
+              </el-input>
             </div>
           </el-col>
-          <el-col :span="3">
-            <a href="">
-              <div class="h1">
-                <div>
-                  <el-avatar v-if="userlogo" :src="'http://localhost:8800/'+userlogo"
-                             class="avatar"></el-avatar>
-                </div>
-                <div>
-                  {{name}}
-                </div>
+          <el-col :span="1" :offset="2">
+            <a href="http://localhost:8080/#/cus_center" v-if="token!==undefined">
+              <el-avatar v-if="userlogo" :src="'http://localhost:8800/'+userlogo"
+                         class="avatar">
+              </el-avatar>
+            </a>
+          </el-col>
+          <el-col :span="2">
+            <a href="http://localhost:8080/#/cus_center" v-if="token!==undefined">
+              <div class="user_logo">
+                {{name}}
+              </div>
+            </a>
+          </el-col>
+          <el-col :span="2" :offset="2">
+            <a href="http://localhost:8080/#/RL" v-if="token===undefined">
+              <div class="user_logo">
+                <el-button icon="el-icon-user">登陆或注册</el-button>
               </div>
             </a>
           </el-col>
@@ -64,16 +62,16 @@
               <el-col :span="6" v-for="list in update_new_data" class="col_buttom">
                 <el-card :body-style="{ padding: '0px' }" class="product_card" shadow="hover">
                   <div @click="inProduct(list.id)">
-<!--                    <el-img-->
-<!--                      :v-if="list.photo === ''"-->
-<!--                      :src="'http://localhost:8800/static/err/imagerr.png'">-->
-<!--                    </el-img>-->
-                    <el-img
-                      :src="'http://localhost:8800/' + list.photo">
+                    <!--                    <el-img-->
+                    <!--                      :v-if="list.photo === ''"-->
+                    <!--                      :src="'http://localhost:8800/static/err/imagerr.png'">-->
+                    <!--                    </el-img>-->
+                    <el-image
+                      :src="'http://localhost:8800/' + list.photo" style="width:300px;height: 300px">
                       <div slot="placeholder" class="image-slot">
                         加载中<span class="dot">...</span>
                       </div>
-                    </el-img>
+                    </el-image>
                     <div style="padding: 10px;">
                       <span>{{list.name}}</span>
                       <div class="bottom clearfix">
@@ -119,34 +117,52 @@
   export default {
     data() {
       return {
+        keyword: '',
+        pro_type: '',
+        type2: '',
         img_logo: pro_logo,
+        token: localStorage.getItem('token'),
         name: JSON.parse(localStorage.getItem('user')).username,
         userlogo: localStorage.getItem('userlogo'),
         headers: {"Authorization": "JWT " + localStorage.getItem('token')},
-        input: '',
-        options: [{
-          value: 'pro_fruits', label: '水果'
+        pro_type_options: [{
+          value: '肉类', label: '肉类'
         }, {
-          value: 'pro_cereal', label: '粮食'
+          value: '谷类', label: '谷类'
         }, {
-          value: 'pro_sea', label: '海鲜'
+          value: '水果', label: '水果'
         }, {
-          value: 'pro_meat', label: '肉类'
+          value: '水产', label: '水产'
         }, {
-          value: 'pro_other', label: '其他'
-        }], type_value: '',
+          value: '蔬菜', label: '蔬菜'
+        }, {
+          value: '粮油', label: '粮油'
+        }, {
+          value: '其他', label: '其他'
+        }, {
+          value: undefined, label: '无'
+        }],
         update_new_data: [],
         pageCount: 0,
         aSum: 0,
         currentPage: 0,
         pagesize: 0,
-        keyword: '',
       }
     },
-    components: {
+    components: {},
+    created() {
+      this.pro_type = this.$route.params.type;
+      this.keyword = this.$route.params.keyword1;
+      if (this.$route.params.type1 !== undefined) {
+        this.pro_type = this.$route.params.type1;
+      }
+      if (this.keyword !== undefined || this.pro_type !== undefined) {
+        this.searchProduct()
+      } else {
+        this.getdata();
+      }
     },
     mounted() {
-      this.getdata()
     },
     methods: {
       getdata() {
@@ -154,10 +170,8 @@
         this.$http.get(url, this.headers).then((res) => {
           if (res.data.status === 0) {
             this.update_new_data = res.data.data;
-            console.log(res.data)
             // 总页数
             this.pageCount = res.data.total_page;
-            console.log(res.data.total_page);
             //总条目数
             this.aSum = res.data.total;
             // 当前页数
@@ -185,21 +199,45 @@
           })
         }
       },
-      inProduct(pro_id){
+      inProduct(pro_id) {
         this.$router.push(`/pro_info/${pro_id}`);
       },
       addshopcar(pro_id) {
-        if (localStorage.getItem('token') === ''){
+        if (localStorage.getItem('token') === '') {
           this.$message('请先登陆');
-          return ;
+          return;
         }
         let url = this.baseUrl + "/shopcar/";
         let userid = JSON.parse(localStorage.getItem('user')).id;
-        this.$http.post(url,{'user': userid, 'product': pro_id},this.headers).then((res) => {
-          let status = res.data['status'];
+        this.$http.post(url, {'user': userid, 'product': pro_id}, this.headers).then((res) => {
           let msg = res.data['msg'];
-          console.log(status);
           this.$message(msg);
+        })
+      },
+      searchProduct() {
+        let url = this.baseUrl + "/products/";
+        if (this.keyword !== undefined) {
+          url = url + "?keyword=" + this.keyword;
+          if (this.pro_type !== undefined) {
+            url = url + '&type=' + this.pro_type;
+          }
+        } else if (this.pro_type !== undefined) {
+          url = url + '?type=' + this.pro_type;
+        }
+        this.$http.get(url, this.headers).then((res) => {
+          if (res.data.status === 0) {
+            this.update_new_data = res.data.data;
+            console.log(res.data);
+            // 总页数
+            this.pageCount = res.data.total_page;
+            console.log(res.data.total_page);
+            //总条目数
+            this.aSum = res.data.total;
+            // 当前页数
+            this.currentPage = res.data.currenr_page;
+            // 每页显示条目数
+            this.pagesize = res.data.page_size;
+          }
         })
       },
     }
@@ -211,9 +249,42 @@
   @import "../assets/css/H_M_F.css";
 
   .avatar {
-    margin-top: 12px;
+    margin-top: 5px;
     margin-left: 10px;
     float: left;
+  }
+
+  .avatar_logo {
+    width: 70px;
+    height: 50px;
+    border-radius: 5px;
+    margin-left: 1px;
+    margin-right: 5px;
+  }
+
+  .user_logo {
+    line-height: 50px;
+    color: whitesmoke;
+    font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+    margin-top: 5px;
+  }
+
+  .logo {
+    height: 30px;
+    margin-top: 5px;
+  }
+
+  .input_div {
+    margin-top: 8px;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+  }
+
+  .elselect {
+    width: 100px;
   }
 
   .product_card img {

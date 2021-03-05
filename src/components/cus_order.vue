@@ -1,8 +1,5 @@
 <template>
   <el-container>
-    <el-header>
-      <h4>订单管理</h4>
-    </el-header>
     <el-main>
       <div v-if="orderlist.length>0" class="aa">
         <el-table
@@ -77,8 +74,11 @@
           index: '',
         }
       },
-      mounted() {
+      created() {
         this.getAllOrder()
+      },
+      mounted() {
+
       },
       methods: {
         getAllOrder() {

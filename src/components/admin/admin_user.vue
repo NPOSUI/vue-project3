@@ -4,7 +4,7 @@
       <div>
         <el-row>
           <el-col :span="16">
-            <el-input type="number" placeholder="请输入评论ID" v-model="id" class="input-with-select">
+            <el-input type="number" placeholder="请输入用户名" v-model="id" class="input-with-select">
               <el-button slot="append" icon="el-icon-search" @click="searchcomment"></el-button>
             </el-input>
           </el-col>
